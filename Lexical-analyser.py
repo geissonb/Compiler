@@ -1,4 +1,3 @@
-global tabela_simbolos 
 dfa = {
   0 : {'D': 1, '"': 8, 'L': 10, 'E': 10, 'e': 10, '{': 11, 'eof': 13, '<': 14, '>': 15, '=': 17, '+': 19, '-': 19, '*': 19, '/': 19, '(': 20, ')': 21, ';': 22, ',': 23},
   1 : {'D': 1, 'E': 4, 'e': 4, '.': 2},
@@ -69,7 +68,6 @@ tabela_simbolos = {
 global erro, Lista_tokens, TOKENS
 erro = 1
 TOKENS = {}
-Lista_tokens = []
 
 def OpenFile(name):
 	global source
@@ -100,16 +98,52 @@ def ERROR(text,estado,l,c):
 	print(text + ' - ' + erros[estado]+ " linha " + a + " coluna " + b)
 
 
+def ProcessarErro(qtd_erro,buffer):
+	global erro,check,ant,checkpoint,flag,b
+
+	if check == True:
+		source.seek(ant,0)
+	
+	a = str(qtd_erro)
+	b = "Erro " + a
+	TOKENS[buffer] = [b, buffer,'']
+	erro += 1
+	if checkpoint == True:
+		source.read(1)
+	flag = True
+	return(TOKENS[buffer])
+
+def ProcessarDados(atual,buffer):
+	if atual in finais:
+		if atual == 10:
+			if buffer in tabela_simbolos:
+				return(tabela_simbolos[buffer])
+			else:	
+				tabela_simbolos[buffer] = [finais[atual], buffer, '']
+				return(tabela_simbolos[buffer])
+		elif atual != 10:
+			if buffer in TOKENS:
+				return(TOKENS[buffer])
+			else:
+				TOKENS[buffer] = [finais[atual], buffer, '']
+				return(TOKENS[buffer])
+	else:
+		aux = ProcessarErro(qtd_erro,buffer)
+		return aux
+
+linha = 0
+coluna = 0
+
 def SCANNER():
-	global atual,proximo, buffer, ant, linha, coluna, flag,b,erro
+	global atual,proximo, buffer, ant, linha, coluna, flag,b,erro,check,checkpoint,qtd_erro,caractere,b
 
 	atual = 0
 	buffer = ''
-	linha = 0
-	coluna = 0
 	flag = False
 	b = ''
 	qtd_erro = erro
+	check = False
+	checkpoint = False
 
 	while True:
 		encontrado = False
@@ -119,18 +153,15 @@ def SCANNER():
 		coluna += 1
 
 		if temp == '':
-			if atual == 0: atual = 13
+			if atual == 0:
+				 atual = 13
 
 			elif atual == 8 or atual == 11:
 
-				source.seek(ant,0)
-				a = str(qtd_erro)
-				b = "Erro " + a
-				TOKENS[buffer] = [b, buffer,'']
-				ERROR(b,atual,linha,coluna)
-				erro += 1
-				flag = True
-				return(TOKENS[buffer])
+				#source.seek(ant,0)
+				check = True
+				t = ProcessarErro(qtd_erro,buffer)
+				return t
 
 			if atual in finais:
 				TOKENS['eof'] = ['eof','eof','']
@@ -159,62 +190,21 @@ def SCANNER():
 
 			elif caractere in [' ', '\n', '\t']:
 				if atual != 0:
-					if atual in finais:
-						if atual == 10:
-							if buffer in tabela_simbolos:
-								return(tabela_simbolos[buffer])
-							else:
-								tabela_simbolos[buffer] = [finais[atual], buffer, '']
-								return(tabela_simbolos[buffer])
-						elif atual != 10:
-							if buffer in TOKENS:
-								return(TOKENS[buffer])
-							else:
-								TOKENS[buffer] = [finais[atual], buffer, '']
-								return(TOKENS[buffer])
-
-					buffer = ''
-					atual = 0
-
-				if caractere == '\n':
-					linha += 1
-					coluna = 0
-
+					t = ProcessarDados(atual,buffer)
+					return t
+					
 			else:
 				source.seek(ant,0)
 				coluna -= 1
 				if atual != 0:
-					if atual in finais:
-						if atual == 10:
-							if buffer in tabela_simbolos:
-								return(tabela_simbolos[buffer])
-							else:	
-								tabela_simbolos[buffer] = [finais[atual], buffer, '']
-								return(tabela_simbolos[buffer])
-						elif atual != 10:
-							if buffer in TOKENS:
-								return(TOKENS[buffer])
-							else:
-								TOKENS[buffer] = [finais[atual], buffer, '']
-								return(TOKENS[buffer])
-					else:
-						a = str(qtd_erro)
-						b = "Erro" + a
-						TOKENS[buffer] = [b,buffer,'']
-						erro += 1
-						flag = True
-						return(TOKENS[buffer])
+					t = ProcessarDados(atual,buffer)
+					return t
 
 				else:
-					a = str(qtd_erro)
-					b = "Erro " + a
-					TOKENS[buffer] = [b,caractere,'']
-					erro += 1
-					source.read(1)
-					flag = True
-					return(TOKENS[buffer])
+					checkpoint = True
+					t = ProcessarErro(qtd_erro,caractere)
+					return t
 
-				
 				buffer = ''
 				atual = 0
 
@@ -223,17 +213,18 @@ def SCANNER():
 OpenFile("fonte.txt")
 
 while True: 
-  s = SCANNER()
+	s = SCANNER()
 
-  print(s)
+	print(s)
+	
+	if flag:
+		ERROR(b,atual,linha,coluna)
+	
+	if atual == 13:
+		break
 
-  if flag:
-    ERROR(b,atual,linha,coluna)
-
-  if atual == 13:
-    break
-  
-
-  
+	if caractere == '\n':
+		linha +=1
+		coluna = 0
 
 CloseFile(source)
