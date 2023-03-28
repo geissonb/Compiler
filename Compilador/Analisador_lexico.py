@@ -77,9 +77,11 @@ global erro, Lista_tokens, TOKENS
 erro = 1
 TOKENS = {}
 
+
 def OpenFile(name):
     global source
     source = open(name)
+
 
 def CloseFile():
     source.close()
@@ -102,13 +104,13 @@ def verifica_caractere(s):
         return s
 
 
-def ERROR(text, estado, l, c):
+def error(text, estado, l, c):
     a = str(l)
     b = str(c)
     print(text + ' - ' + erros[estado] + " linha " + a + " coluna " + b)
 
 
-def ProcessarErro(qtd_erro, buffer):
+def processar_erro(qtd_erro, buffer):
     global erro, check, ant, checkpoint, flag, b
 
     if check:
@@ -124,7 +126,7 @@ def ProcessarErro(qtd_erro, buffer):
     return TOKENS[buffer]
 
 
-def ProcessarDados(atual, buffer):
+def processar_dados(atual, buffer):
     if atual in finais:
         if atual == 10:
             if buffer in tabela_simbolos:
@@ -139,11 +141,11 @@ def ProcessarDados(atual, buffer):
                 TOKENS[buffer] = [finais[atual], buffer, '']
                 return TOKENS[buffer]
     else:
-        aux = ProcessarErro(qtd_erro, buffer)
+        aux = processar_erro(qtd_erro, buffer)
         return aux
 
 
-def SCANNER():
+def scanner():
     global atual, proximo, buffer, ant, linha, coluna, flag, b, erro, check, checkpoint, qtd_erro, caractere, b, tipo
 
     atual = 0
@@ -168,7 +170,7 @@ def SCANNER():
             elif atual == 8 or atual == 11:
 
                 check = True
-                t = ProcessarErro(qtd_erro, buffer)
+                t = processar_erro(qtd_erro, buffer)
                 return t
 
             if atual in finais:
@@ -197,19 +199,19 @@ def SCANNER():
 
             elif caractere in [' ', '\n', '\t']:
                 if atual != 0:
-                    t = ProcessarDados(atual, buffer)
+                    t = processar_dados(atual, buffer)
                     return t
 
             else:
                 source.seek(ant, 0)
                 coluna -= 1
                 if atual != 0:
-                    t = ProcessarDados(atual, buffer)
+                    t = processar_dados(atual, buffer)
                     return t
 
                 else:
                     checkpoint = True
-                    t = ProcessarErro(qtd_erro, caractere)
+                    t = processar_erro(qtd_erro, caractere)
                     return t
 
 
@@ -218,12 +220,12 @@ def SCANNER():
 
 def gerencia():
 
-    s = SCANNER()
+    s = scanner()
 
     global linha, coluna, tipo
 
     if flag:
-        ERROR(b, atual, linha, coluna)
+        error(b, atual, linha, coluna)
 
     if caractere == '\n':
         linha += 1
