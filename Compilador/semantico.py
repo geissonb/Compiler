@@ -66,9 +66,9 @@ def iniciar():
     cabecalho.append('typedef char lit[256];\n\n')
     cabecalho.append('int main(){\n\n')
 
-    corpo_temporarias.append('/*variáveis temporarias*/\n')
+    corpo_temporarias.append(' /*variáveis temporarias*/\n')
 
-    corpo.append('\n\n/*variáveis*/\n')
+    corpo.append('\n\n /*variáveis*/\n')
 
 
 def validar():
@@ -79,8 +79,7 @@ def validar():
 
 # variáveis para gerenciar os temporários
 numTemp = 0
-posTexto = 0
-
+indent = 0
 
 # conferir declaração de variável
 def conferir_declaracao(valores):
@@ -102,9 +101,9 @@ def empilhar(token, lexema, tipo):
 
 # função geral do semantico
 def avalia(prod):
-    global pilha_semantica
-    global numTemp
+    global pilha_semantica, numTemp, indent
 
+    indentacao = ' '
     erro = False
 
     # começo a testar as produções
@@ -121,7 +120,10 @@ def avalia(prod):
             if Analisador_lexico.tabela_simbolos[pilha_semantica[i][1]][2] != '':
                 break
             Analisador_lexico.tabela_simbolos[pilha_semantica[i][1]][2] = tipo_verifica
-            texto = tipo_var[tipo_verifica] + ' ' + pilha_semantica[i][1] + ';\n'
+            indent += 1
+            indentacao = ' ' * indent
+            texto = str(indentacao) + tipo_var[tipo_verifica] + ' ' + pilha_semantica[i][1] + ';\n'
+            indent -= 1
             corpo.append(texto)
             i -= 1
 
@@ -146,11 +148,20 @@ def avalia(prod):
     elif prod == gram[13]:  # ES -> leia id
         if conferir_declaracao(pilha_semantica[-1]):
             if pilha_semantica[-1][2] == 'literal':
-                corpo.append('scanf("%s", &' + pilha_semantica[-1][1]+');\n')
+                indent += 1
+                indentacao = ' ' * indent
+                corpo.append(str(indentacao) + 'scanf("%s", &' + pilha_semantica[-1][1]+');\n')
+                indent -= 1
             elif pilha_semantica[-1][2] == 'inteiro':
-                corpo.append('scanf("%d",&' + pilha_semantica[-1][1]+');\n')
+                indent += 1
+                indentacao = ' ' * indent
+                corpo.append(str(indentacao) + 'scanf("%d",&' + pilha_semantica[-1][1]+');\n')
+                indent -= 1
             elif pilha_semantica[-1][2] == 'real':
-                corpo.append('scanf("%f",&' + pilha_semantica[-1][1]+');\n')
+                indent += 1
+                indentacao = ' ' * indent
+                corpo.append(str(indentacao) + 'scanf("%f",&' + pilha_semantica[-1][1]+');\n')
+                indent -= 1
         else:
             print("Variável não declarada linha:"+str(Analisador_lexico.linha),
                   "coluna : " + str(Analisador_lexico.coluna))
@@ -159,11 +170,20 @@ def avalia(prod):
     elif prod == gram[14]:  # ES -> escreva ARG
         argumento = pilha_semantica[-1][2]
         if argumento == 'literal':
-            corpo.append('printf("%s",' + pilha_semantica[-1][1] + ');\n')
+            indent += 1
+            indentacao = ' ' * indent
+            corpo.append(str(indentacao) + 'printf("%s",' + pilha_semantica[-1][1] + ');\n')
+            indent -= 1
         elif argumento == 'inteiro':
-            corpo.append('printf("%d",' + pilha_semantica[-1][1] + ');\n')
+            indent += 1
+            indentacao = ' ' * indent
+            corpo.append(str(indentacao) + 'printf("%d",' + pilha_semantica[-1][1] + ');\n')
+            indent -= 1
         elif argumento == 'real':
-            corpo.append('printf("%f"' + pilha_semantica[-1][1] + ');\n')
+            indent += 1
+            indentacao = ' ' * indent
+            corpo.append(str(indentacao) + 'printf("%f"' + pilha_semantica[-1][1] + ');\n')
+            indent -= 1
         else:
             print("Variável não declarada linha:"+str(Analisador_lexico.linha),
                   "coluna : " + str(Analisador_lexico.coluna))
@@ -197,7 +217,10 @@ def avalia(prod):
             print("Tipos incompatíveis na atribuição linha : " + str(Analisador_lexico.linha))
             erro = True
 
-        text = str(pilha_semantica[-1][1]) + '=' + str(pilha_semantica[-2][1]) + ';\n'
+        indent += 1
+        indentacao = ' ' * indent
+        text = str(indentacao) + str(pilha_semantica[-1][1]) + '=' + str(pilha_semantica[-2][1]) + ';\n'
+        indent -= 1
 
         if flag:
             corpo.append(text)
@@ -210,14 +233,22 @@ def avalia(prod):
             print("Erro semântico linha : " + str(Analisador_lexico.linha))
             erro = True
 
-        text0 = tipo_var[x1] + ' T' + str(numTemp) + ';\n'
-        text = 'T' + str(numTemp) + ' = ' + str(pilha_semantica[-3][1])\
+        indentacao = ' ' * 1
+        text0 = str(indentacao) + tipo_var[x1] + ' T' + str(numTemp) + ';\n'
+
+        indent += 1
+        indentacao = ' ' * indent
+        text = str(indentacao) + 'T' + str(numTemp) + ' = ' + str(pilha_semantica[-3][1])\
                + '' + str(pilha_semantica[-1][1]) + \
                '' + str(pilha_semantica[-2][1]) + ';\n'
+        indent -= 1
 
         corpo_temporarias.append(text0)
         corpo.append(text)
-        text2 = str(pilha_semantica[-3][1]) + ' = ' + 'T' + str(numTemp) + ';\n'
+        indent += 1
+        indentacao = ' ' * indent
+        text2 = str(indentacao) + (pilha_semantica[-3][1]) + ' = ' + 'T' + str(numTemp) + ';\n'
+        indent -= 1
         corpo.append(text2)
         numTemp += 1
 
@@ -229,20 +260,31 @@ def avalia(prod):
             pilha_semantica[-1][2] = 'inteiro'
 
     elif prod == gram[26]:  # CAB -> se (EXP_R) entao
-        # exp_r = pilha_semantica[-1][1]
         x1 = pilha_semantica.pop()
         x2 = pilha_semantica.pop()
         x3 = pilha_semantica.pop()
         exp_r = str(x3[1]) + ' ' + str(x1[1]) + ' ' + str(x2[1])
-        text0 = 'bool' + ' T' + str(numTemp) + ';\n'
-        text = 'T' + str(numTemp) + ' = ' + str(exp_r) + ';\n'
-        text2 = "if (" + 'T' + str(numTemp) + ') {\n'
+        indentacao = ' ' * 1
+        text0 = str(indentacao) + 'bool' + ' T' + str(numTemp) + ';\n'
+
+        indent += 1
+        indentacao = ' ' * indent
+        text = str(indentacao) + 'T' + str(numTemp) + ' = ' + str(exp_r) + ';\n'
+        indent -= 1
+
+        indent += 1
+        indentacao = ' ' * indent
+        text2 = str(indentacao) + "if (" + 'T' + str(numTemp) + ') {\n'
+        indent += 1
         corpo_temporarias.append(text0)
         corpo.append(text)
         corpo.append(text2)
         numTemp += 1
 
     elif prod == gram[31] or prod == gram[37] or prod == gram[38]:
-        corpo.append('}\n')
+        indent -= 1
+        indentacao = ' ' * indent
+        corpo.append(str(indentacao) + '}\n')
+        indent -= 1
 
     return erro
