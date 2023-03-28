@@ -7,16 +7,20 @@ typedef char lit[256];
 int main(){
 
 /*variáveis temporarias*/
+bool T0;
+bool T1;
+int T2;
+int T3;
+int T4;
 
 
 /*variáveis*/
-literal A;
-literal J;
-literal K;
-inteiro B;
-inteiro D;
-real C;
-
+char A;
+char J;
+char K;
+int B;
+int D;
+double C;
 
 
 
@@ -24,19 +28,21 @@ printf("%s","Digite B");
 scanf("%d",&B);
 printf("%s","Digite A:");
 scanf("%s", &A);
-bool T0 = B > 2;
+T0 = B > 2;
 if (T0) {
-bool T1 = B <= 4;
+T1 = B <= 4;
 if (T1) {
 printf("%s","B esta entre 2 e 4");
 }
 }
-inteiro T2 = B+1;
+T2 = B+1;
 B = T2;
-inteiro T3 = B+2;
+T3 = B+2;
 B = T3;
-inteiro T4 = B+3;
+T4 = B+3;
 B = T4;
+D=B;
+C=5.0;
 printf("%s","\nB=\n");
 printf("%d",D);
 printf("%s","\n");
