@@ -1,46 +1,5 @@
 import Analisador_lexico  # para modificar a tabela de símbolos
-
-# novamente a gramática para eu identificar a produção
-gram = {
-    1: 'P\' -> P',
-    2: 'P -> inicio V A',
-    3: 'V -> varinicio LV',
-    4: 'LV -> D LV',
-    5: 'LV -> varfim ;',
-    6: 'D -> TIPO L ;',
-    7: 'L -> id , L',
-    8: 'L -> id',
-    9: 'TIPO -> int',
-    10: 'TIPO -> real',
-    11: 'TIPO -> lit',
-    12: 'A -> ES A',
-    13: 'ES -> leia id ;',
-    14: 'ES -> escreva ARG ;',
-    15: 'ARG -> literal',
-    16: 'ARG -> num',
-    17: 'ARG -> id',
-    18: 'A -> CMD A',
-    19: 'CMD -> id rcb LD ;',
-    20: 'LD -> OPRD opm OPRD',
-    21: 'LD -> OPRD',
-    22: 'OPRD -> id',
-    23: 'OPRD -> num',
-    24: 'A -> COND A',
-    25: 'COND -> CAB CP',
-    26: 'CAB -> se ( EXP_R ) entao',
-    27: 'EXP_R -> OPRD opr OPRD',
-    28: 'CP -> ES CP',
-    29: 'CP -> CMD CP',
-    30: 'CP -> COND CP',
-    31: 'CP -> fimse',
-    32: 'A -> R A',
-    33: 'R -> facaAte ( EXP_R ) CP_R',
-    34: 'CP_R -> ES CP_R',
-    35: 'CP_R -> CMD CP_R',
-    36: 'CP_R -> COND CP_R',
-    37: 'CP_R -> fimFaca',
-    38: 'A -> fim',
-}
+import gramatica # importando a gramática do compilador
 
 tipo_var = {
     'literal': 'char',
@@ -116,10 +75,10 @@ def avalia(prod):
     erro = False
 
     # começo a testar as produções
-    if prod == gram[5]:   # LV -> varfim
+    if prod == gramatica.gram[5]:   # LV -> varfim
         corpo.append('\n'*3)
 
-    elif prod == gram[6]:   # D -> TIPO L
+    elif prod == gramatica.gram[6]:   # D -> TIPO L
         i = -1
         while pilha_semantica[i][2] not in ['inteiro', 'real', 'literal']:
             i -= 1
@@ -134,7 +93,7 @@ def avalia(prod):
             corpo.append(texto)
             i -= 1
 
-    elif prod == gram[7]:  # L -> id, L
+    elif prod == gramatica.gram[7]:  # L -> id, L
         i = -1
         while pilha_semantica[i][2] not in ['inteiro', 'real', 'literal']:
             if conferir_declaracao(pilha_semantica[i]):
@@ -143,7 +102,7 @@ def avalia(prod):
                 erro = True
             i -= 1
 
-    elif prod == gram[8]:  # L -> id
+    elif prod == gramatica.gram[8]:  # L -> id
         aux = pilha_semantica.pop()
         if conferir_declaracao(aux):
             print("Variavel já foi declarada na linha: " + str(Analisador_lexico.linha),
@@ -152,7 +111,7 @@ def avalia(prod):
         else:
             pilha_semantica.append(aux)
 
-    elif prod == gram[13]:  # ES -> leia id
+    elif prod == gramatica.gram[13]:  # ES -> leia id
         if conferir_declaracao(pilha_semantica[-1]):
             if pilha_semantica[-1][2] == 'literal':
                 texto = 'scanf("%s", &' + pilha_semantica[-1][1]+');\n'
@@ -171,7 +130,7 @@ def avalia(prod):
                   "coluna : " + str(Analisador_lexico.coluna))
             erro = True
 
-    elif prod == gram[14]:  # ES -> escreva ARG
+    elif prod == gramatica.gram[14]:  # ES -> escreva ARG
         argumento = pilha_semantica[-1][2]
         if argumento == 'literal':
             texto = 'printf("%s",' + pilha_semantica[-1][1] + ');\n'
@@ -190,23 +149,23 @@ def avalia(prod):
                   "coluna : " + str(Analisador_lexico.coluna))
             erro = True
 
-    elif prod == gram[15]:  # ARG -> literal
+    elif prod == gramatica.gram[15]:  # ARG -> literal
         pilha_semantica[-1][2] = 'literal'
 
-    elif prod == gram[16]:   # ARG -> num
+    elif prod == gramatica.gram[16]:   # ARG -> num
         aux = pilha_semantica[-1]
         if '.' in aux[1] or 'e' in aux[1]:
             pilha_semantica[-1][2] = 'real'
         else:
             pilha_semantica[-1][2] = 'inteiro'
 
-    elif prod == gram[17]:  # ARG -> id
+    elif prod == gramatica.gram[17]:  # ARG -> id
         if not conferir_declaracao(pilha_semantica[-1]):
             print("Variável não declarada linha:"+str(Analisador_lexico.linha),
                   "coluna : " + str(Analisador_lexico.coluna))
             erro = True
 
-    elif prod == gram[19]:  # CMD -> id rcb LD
+    elif prod == gramatica.gram[19]:  # CMD -> id rcb LD
         x1 = Analisador_lexico.tabela_simbolos[pilha_semantica[-1][1]][2]
         x2 = pilha_semantica[-2][2]
         flag = True
@@ -224,7 +183,7 @@ def avalia(prod):
         if flag:
             corpo.append(text)
 
-    elif prod == gram[20]: 	# LD -> OPRD opm OPRD
+    elif prod == gramatica.gram[20]: 	# LD -> OPRD opm OPRD
         x1 = pilha_semantica[-3][2]
         x2 = pilha_semantica[-2][2]
 
@@ -249,14 +208,14 @@ def avalia(prod):
         corpo.append(text2)
         numTemp += 1
 
-    elif prod == gram[23]:  # OPRD -> num
+    elif prod == gramatica.gram[23]:  # OPRD -> num
         aux = pilha_semantica[-1]
         if '.' in aux[1] or 'e' in aux[1]:
             pilha_semantica[-1][2] = 'real'
         else:
             pilha_semantica[-1][2] = 'inteiro'
 
-    elif prod == gram[26]:  # CAB -> se (EXP_R) entao
+    elif prod == gramatica.gram[26]:  # CAB -> se (EXP_R) entao
         x1 = pilha_semantica.pop()
         x2 = pilha_semantica.pop()
         x3 = pilha_semantica.pop()
@@ -276,7 +235,7 @@ def avalia(prod):
         corpo.append(text2)
         numTemp += 1
 
-    elif prod == gram[31] or prod == gram[37] or prod == gram[38]:
+    elif prod == gramatica.gram[31] or prod == gramatica.gram[37] or prod == gramatica.gram[38]:
         indentacao = ' ' * indent
         corpo.append(str(indentacao) + '}\n')
         indent -= 4
