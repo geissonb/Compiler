@@ -1,52 +1,11 @@
 # importações
-import Analisador_lexico
-import semantico
+import Analisador_lexico  # importando a parte de análise léxica
+import semantico  # importando a parte de análise semântica
 import pandas as pd
+import gramatica  # importando a gramática do compilador
 
 # variáveis
 arquivo = "FONTE.ALG"
-
-# gramática
-gram = {
-    '1': 'P\' -> P',
-    '2': 'P -> inicio V A',
-    '3': 'V -> varinicio LV',
-    '4': 'LV -> D LV',
-    '5': 'LV -> varfim ;',
-    '6': 'D -> TIPO L ;',
-    '7': 'L -> id , L',
-    '8': 'L -> id',
-    '9': 'TIPO -> int',
-    '10': 'TIPO -> real',
-    '11': 'TIPO -> lit',
-    '12': 'A -> ES A',
-    '13': 'ES -> leia id ;',
-    '14': 'ES -> escreva ARG ;',
-    '15': 'ARG -> literal',
-    '16': 'ARG -> num',
-    '17': 'ARG -> id',
-    '18': 'A -> CMD A',
-    '19': 'CMD -> id rcb LD ;',
-    '20': 'LD -> OPRD opm OPRD',
-    '21': 'LD -> OPRD',
-    '22': 'OPRD -> id',
-    '23': 'OPRD -> num',
-    '24': 'A -> COND A',
-    '25': 'COND -> CAB CP',
-    '26': 'CAB -> se ( EXP_R ) entao',
-    '27': 'EXP_R -> OPRD opr OPRD',
-    '28': 'CP -> ES CP',
-    '29': 'CP -> CMD CP',
-    '30': 'CP -> COND CP',
-    '31': 'CP -> fimse',
-    '32': 'A -> R A',
-    '33': 'R -> facaAte ( EXP_R ) CP_R',
-    '34': 'CP_R -> ES CP_R',
-    '35': 'CP_R -> CMD CP_R',
-    '36': 'CP_R -> COND CP_R',
-    '37': 'CP_R -> fimFaca',
-    '38': 'A -> fim',
-}
 
 # erros
 erros = {
@@ -163,7 +122,7 @@ while True:
 
     # se for do tipo reduce (reduzir)
     elif acao[0] == 'R':
-        prod = gram[acao.lstrip('R')]  # pego a produção da gramática referente
+        prod = gramatica.gram[int(acao.lstrip('R'))]  # pego a produção da gramática referente
         lado_esq = prod.split(' -> ')[0]  # pego o lado esquerdo dividindo pelo ->
         qtd_smb = len(prod.split(' -> ')[1].split(' '))  # pego a qtd de simbolos do lado direito do ->
         pilha = pilha[:-qtd_smb]  # retiro da pilha a quantidade de simbolos do lado direito
