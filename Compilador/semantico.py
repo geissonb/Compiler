@@ -141,7 +141,7 @@ def avalia(prod):
             texto = indentar(indent, texto)
             corpo.append(texto)
         elif argumento == 'real':
-            texto = 'printf("%f"' + pilha_semantica[-1][1] + ');\n'
+            texto = 'printf("%f",' + pilha_semantica[-1][1] + ');\n'
             texto = indentar(indent, texto)
             corpo.append(texto)
         else:
