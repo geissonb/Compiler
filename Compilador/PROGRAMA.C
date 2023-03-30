@@ -15,9 +15,9 @@ int main(){
 
 
     /*variáveis*/
-    char A;
-    char J;
-    char K;
+    lit A;
+    lit J;
+    lit K;
     int B;
     int D;
     double C;
@@ -46,7 +46,7 @@ int main(){
     printf("%s","\nB=\n");
     printf("%d",D);
     printf("%s","\n");
-    printf("%f"C);
+    printf("%f",C);
     printf("%s","\n");
     printf("%s",A);
     printf("%s","\n");
