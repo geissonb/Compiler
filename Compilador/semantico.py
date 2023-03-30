@@ -235,6 +235,26 @@ def avalia(prod):
         corpo.append(text2)
         numTemp += 1
 
+    # elif prod == gramatica.gram[33]:  # R -> facaAte ( EXP_R ) CP_R
+    # x1 = pilha_semantica.pop()
+    # x2 = pilha_semantica.pop()
+    # x3 = pilha_semantica.pop()
+    # exp_r = str(x3[1]) + ' ' + str(x1[1]) + ' ' + str(x2[1])
+    #
+    # text0 = 'bool' + ' T' + str(numTemp) + ';\n'
+    # text0 = indentar(0, text0)
+    #
+    # text = 'T' + str(numTemp) + ' = ' + str(exp_r) + ';\n'
+    # text = indentar(indent, text)
+    #
+    # indent += 4
+    # indentacao = ' ' * indent
+    # text2 = str(indentacao) + "if (" + 'T' + str(numTemp) + '){\n'
+    # corpo_temporarias.append(text0)
+    # corpo.append(text)
+    # corpo.append(text2)
+    # numTemp += 1
+
     elif prod == gramatica.gram[31] or prod == gramatica.gram[37] or prod == gramatica.gram[38]:
         indentacao = ' ' * indent
         corpo.append(str(indentacao) + '}\n')
