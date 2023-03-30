@@ -114,7 +114,7 @@ def avalia(prod):
     elif prod == gramatica.gram[13]:  # ES -> leia id
         if conferir_declaracao(pilha_semantica[-1]):
             if pilha_semantica[-1][2] == 'literal':
-                texto = 'scanf("%s", &' + pilha_semantica[-1][1]+');\n'
+                texto = 'scanf("%s", ' + pilha_semantica[-1][1]+');\n'
                 texto = indentar(indent, texto)
                 corpo.append(texto)
             elif pilha_semantica[-1][2] == 'inteiro':
