@@ -27,7 +27,7 @@ int main(){
     printf("%s","Digite B");
     scanf("%d",&B);
     printf("%s","Digite A:");
-    scanf("%s", &A);
+    scanf("%s", A);
     T0 = B > 2;
     if (T0){
         T1 = B <= 4;
