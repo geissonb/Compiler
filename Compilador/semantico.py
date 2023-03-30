@@ -1,8 +1,8 @@
 import Analisador_lexico  # para modificar a tabela de símbolos
-import gramatica # importando a gramática do compilador
+import gramatica  # importando a gramática do compilador
 
 tipo_var = {
-    'literal': 'char',
+    'literal': 'lit',
     'inteiro': 'int',
     'real': 'double'
 }
