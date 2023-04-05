@@ -48,6 +48,8 @@ def indentar(numero_indentacao, texto):
 # variáveis para gerenciar os temporários
 numTemp = 0
 indent = 0
+ocorrencias_facaAte = 0
+corpo_repeticao = []
 
 
 # conferir declaração de variável
@@ -70,7 +72,7 @@ def empilhar(token, lexema, tipo):
 
 # função geral do semantico
 def avalia(prod):
-    global pilha_semantica, numTemp, indent
+    global pilha_semantica, numTemp, indent, ocorrencias_facaAte
 
     erro = False
 
@@ -182,6 +184,8 @@ def avalia(prod):
         text = indentar(indent, text)
 
         if flag:
+            if ocorrencias_facaAte > 0:
+                corpo_repeticao.append(text)
             corpo.append(text)
 
     elif prod == gramatica.gram[20]: 	# LD -> OPRD opm OPRD
@@ -201,12 +205,22 @@ def avalia(prod):
         text = indentar(indent, text)
 
         corpo_temporarias.append(text0)
-        corpo.append(text)
+        if ocorrencias_facaAte > 0:
+            text = indentar(indent, text)
+            corpo_repeticao.append(text)
+            for i in range(0, 3, 1):
+                pilha_semantica.pop()
+        else:
+            corpo.append(text)
 
         text2 = (pilha_semantica[-3][1]) + ' = ' + 'T' + str(numTemp) + ';\n'
         text2 = indentar(indent, text2)
 
-        corpo.append(text2)
+        if ocorrencias_facaAte > 0:
+            text2 = indentar(indent, text2)
+            corpo_repeticao.append(text2)
+        else:
+            corpo.append(text2)
         numTemp += 1
 
     elif prod == gramatica.gram[23]:  # OPRD -> num
@@ -230,35 +244,49 @@ def avalia(prod):
 
         indent += 4
         indentacao = ' ' * indent
-        text2 = str(indentacao) + "if (" + 'T' + str(numTemp) + '){\n'
+        text2 = str(indentacao) + "if (" + 'T' + str(numTemp) + ') {\n'
         corpo_temporarias.append(text0)
         corpo.append(text)
         corpo.append(text2)
         numTemp += 1
 
-    # elif prod == gramatica.gram[33]:  # R -> facaAte ( EXP_R ) CP_R
-    # x1 = pilha_semantica.pop()
-    # x2 = pilha_semantica.pop()
-    # x3 = pilha_semantica.pop()
-    # exp_r = str(x3[1]) + ' ' + str(x1[1]) + ' ' + str(x2[1])
-    #
-    # text0 = 'bool' + ' T' + str(numTemp) + ';\n'
-    # text0 = indentar(0, text0)
-    #
-    # text = 'T' + str(numTemp) + ' = ' + str(exp_r) + ';\n'
-    # text = indentar(indent, text)
-    #
-    # indent += 4
-    # indentacao = ' ' * indent
-    # text2 = str(indentacao) + "if (" + 'T' + str(numTemp) + '){\n'
-    # corpo_temporarias.append(text0)
-    # corpo.append(text)
-    # corpo.append(text2)
-    # numTemp += 1
+    elif prod == gramatica.gram[33]:  # R -> facaAte ( EXP_R ) CP_R
+        x1 = pilha_semantica.pop()
+        x2 = pilha_semantica.pop()
+        x3 = pilha_semantica.pop()
+        exp_r = str(x1[1]) + ' ' + str(x2[1]) + ' ' + str(x3[1])
+
+        text0 = 'bool' + ' T' + str(numTemp) + ';\n'
+        text0 = indentar(0, text0)
+
+        text = 'T' + str(numTemp) + ' = ' + str(exp_r) + ';\n'
+        ocorrencias_facaAte -= 1
+        indent = ocorrencias_facaAte * 4
+        text = indentar(indent, text)
+
+        text2 = "while (" + 'T' + str(numTemp) + ') {\n'
+        text2 = indentar(indent, text2)
+        corpo_temporarias.append(text0)
+        s = len(corpo_repeticao)
+        s *= -1
+
+        corpo_repeticao.insert(s - 1, text2)
+        corpo_repeticao.insert(s-2, text)
+        numTemp += 1
+
+        for dado in corpo_repeticao:
+            corpo.append(dado)
+        corpo_repeticao.clear()
 
     elif prod == gramatica.gram[31] or prod == gramatica.gram[37] or prod == gramatica.gram[38]:
         indentacao = ' ' * indent
-        corpo.append(str(indentacao) + '}\n')
+        text = str(indentacao) + '}\n'
+
+        if ocorrencias_facaAte > 0:
+            text = indentar(indent, text)
+            corpo_repeticao.append(text)
+        else:
+            corpo.append(text)
         indent -= 4
 
     return erro
