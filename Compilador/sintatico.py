@@ -102,7 +102,6 @@ aux = ''
 erro_sintatico = False
 erro_semantico = False
 
-
 semantico.iniciar()
 
 # inicio o processamento
@@ -118,6 +117,8 @@ while True:
     if acao[0] == 'S':
         pilha.append(int(acao.lstrip('S')))  # empilho o estado a ir
         semantico.pilha_semantica_aux.append([token, lexema, tipo])
+        if lexema == 'facaAte':
+            semantico.ocorrencias_facaAte += 1
         token, lexema, tipo = Analisador_lexico.gerencia()  # leio o proximo lexema
 
     # se for do tipo reduce (reduzir)
