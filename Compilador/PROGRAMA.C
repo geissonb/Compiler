@@ -12,6 +12,8 @@ int main(){
     int T2;
     int T3;
     int T4;
+    int T5;
+    bool T6;
 
 
     /*variáveis*/
@@ -29,9 +31,9 @@ int main(){
     printf("%s","Digite A:");
     scanf("%s", A);
     T0 = B > 2;
-    if (T0){
+    if (T0) {
         T1 = B <= 4;
-        if (T1){
+        if (T1) {
             printf("%s","B esta entre 2 e 4");
         }
     }
@@ -43,6 +45,11 @@ int main(){
     B = T4;
     D=B;
     C=5.0;
+    T6 = D <= 12;
+    while (T6) {
+        T5 = D+1;
+        D = T5;
+    }
     printf("%s","\nB=\n");
     printf("%d",D);
     printf("%s","\n");
