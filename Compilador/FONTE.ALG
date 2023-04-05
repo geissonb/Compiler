@@ -21,6 +21,9 @@ inicio
 	B<-B+3;
 	D<-B;
 	C<-5.0;
+	facaAte(D<=12)
+	    D<-D+1;
+	fimFaca
 	escreva "\nB=\n";
 	escreva D;
 	escreva "\n";
