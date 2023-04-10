@@ -89,7 +89,7 @@ nao_term = pd.read_csv('tabela_sintatica_NAO_terminais.csv', index_col=0)
 term = pd.read_csv('tabela_sintatica_terminais.csv', index_col=0)
 
 # abrir o arquivo
-Analisador_lexico.OpenFile(arquivo)
+Analisador_lexico.open_file(arquivo)
 
 # inicio o lexico
 token, lexema, tipo = Analisador_lexico.gerencia()
@@ -162,7 +162,7 @@ while True:
 
 
 # fecho o arquivo
-Analisador_lexico.CloseFile()
+Analisador_lexico.close_file()
 
 # escrevo o arquivo C
 if count == 0:
