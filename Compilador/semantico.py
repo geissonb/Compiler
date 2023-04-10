@@ -13,6 +13,7 @@ pilha_semantica_aux = []
 cabecalho = []
 corpo_temporarias = []
 corpo = []
+var_bool_while = {}
 # nome do arquivo resultado
 resultado = 'PROGRAMA.C'
 
@@ -208,8 +209,6 @@ def avalia(prod):
         if ocorrencias_facaAte > 0:
             text = indentar(indent, text)
             corpo_repeticao.append(text)
-            for i in range(0, 3, 1):
-                pilha_semantica.pop()
         else:
             corpo.append(text)
 
@@ -251,32 +250,20 @@ def avalia(prod):
         numTemp += 1
 
     elif prod == gramatica.gram[33]:  # R -> facaAte ( EXP_R ) CP_R
-        x1 = pilha_semantica.pop()
-        x2 = pilha_semantica.pop()
-        x3 = pilha_semantica.pop()
-        exp_r = str(x1[1]) + ' ' + str(x2[1]) + ' ' + str(x3[1])
 
-        text0 = 'bool' + ' T' + str(numTemp) + ';\n'
-        text0 = indentar(0, text0)
-
-        text = 'T' + str(numTemp) + ' = ' + str(exp_r) + ';\n'
-        ocorrencias_facaAte -= 1
-        indent = ocorrencias_facaAte * 4
-        text = indentar(indent, text)
-
-        text2 = "while (" + 'T' + str(numTemp) + ') {\n'
+        text2 = "while (" + str(var_bool_while[ocorrencias_facaAte-1]) + ') {\n'
+        indent = (ocorrencias_facaAte-1) * 4
         text2 = indentar(indent, text2)
-        corpo_temporarias.append(text0)
         s = len(corpo_repeticao)
         s *= -1
 
-        corpo_repeticao.insert(s - 1, text2)
-        corpo_repeticao.insert(s-2, text)
-        numTemp += 1
+        corpo_repeticao.insert(s+1, text2)
 
         for dado in corpo_repeticao:
             corpo.append(dado)
         corpo_repeticao.clear()
+
+        ocorrencias_facaAte -= 1
 
     elif prod == gramatica.gram[31] or prod == gramatica.gram[37] or prod == gramatica.gram[38]:
         indentacao = ' ' * indent
@@ -288,5 +275,26 @@ def avalia(prod):
         else:
             corpo.append(text)
         indent -= 4
+
+    if ocorrencias_facaAte >= 1:
+        if prod == gramatica.gram[27]:  # EXP_R -> OPRD opr OPRD
+            x1 = pilha_semantica.pop()
+            x2 = pilha_semantica.pop()
+            x3 = pilha_semantica.pop()
+
+            exp_r = str(x3[1]) + ' ' + str(x1[1]) + ' ' + str(x2[1])
+
+            text0 = 'bool' + ' T' + str(numTemp) + ';\n'
+            text0 = indentar(0, text0)
+            corpo_temporarias.append(text0)
+
+            text = 'T' + str(numTemp) + ' = ' + str(exp_r) + ';\n'
+            text = indentar(indent, text)
+            text_1 = 'T' + str(numTemp)
+            var_bool_while[ocorrencias_facaAte-1] = text_1
+            s = len(corpo_repeticao)
+            s *= -1
+            corpo_repeticao.insert(s-1, text)
+            numTemp += 1
 
     return erro
