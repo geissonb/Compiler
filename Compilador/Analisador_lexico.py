@@ -78,12 +78,12 @@ erro = 1
 TOKENS = {}
 
 
-def OpenFile(name):
+def open_file(name):
     global source
     source = open(name)
 
 
-def CloseFile():
+def close_file():
     source.close()
 
 
@@ -104,54 +104,53 @@ def verifica_caractere(s):
         return s
 
 
-def error(text, estado, l, c):
-    a = str(l)
-    b = str(c)
-    print(text + ' - ' + erros[estado] + " linha " + a + " coluna " + b)
+def error(text, estado, linha_atual, coluna_atual):
+    _linha = str(linha_atual)
+    _coluna = str(coluna_atual)
+    print(text + ' - ' + erros[estado] + " linha " + _linha + " coluna " + _coluna)
 
 
-def processar_erro(qtd_erro, buffer):
+def processar_erro(n_erros, buffer_atual):
     global erro, check, ant, checkpoint, flag, b
 
     if check:
         source.seek(ant, 0)
 
-    a = str(qtd_erro)
-    b = "Erro " + a
-    TOKENS[buffer] = [b, buffer, '']
+    quantidade_erros = str(n_erros)
+    string_erro = "Erro " + quantidade_erros
+    TOKENS[buffer_atual] = [string_erro, buffer_atual, '']
     erro += 1
     if checkpoint:
         source.read(1)
     flag = True
-    return TOKENS[buffer]
+    return TOKENS[buffer_atual]
 
 
-def processar_dados(atual, buffer):
-    if atual in finais:
-        if atual == 10:
-            if buffer in tabela_simbolos:
-                return tabela_simbolos[buffer]
+def processar_dados(estado_atual, buffer_atual):
+    if estado_atual in finais:
+        if estado_atual == 10:
+            if buffer_atual in tabela_simbolos:
+                return tabela_simbolos[buffer_atual]
             else:
-                tabela_simbolos[buffer] = [finais[atual], buffer, '']
-                return tabela_simbolos[buffer]
-        elif atual != 10:
-            if buffer in TOKENS:
-                return TOKENS[buffer]
+                tabela_simbolos[buffer_atual] = [finais[estado_atual], buffer_atual, '']
+                return tabela_simbolos[buffer_atual]
+        elif estado_atual != 10:
+            if buffer_atual in TOKENS:
+                return TOKENS[buffer_atual]
             else:
-                TOKENS[buffer] = [finais[atual], buffer, '']
-                return TOKENS[buffer]
+                TOKENS[buffer_atual] = [finais[estado_atual], buffer_atual, '']
+                return TOKENS[buffer_atual]
     else:
-        aux = processar_erro(qtd_erro, buffer)
+        aux = processar_erro(qtd_erro, buffer_atual)
         return aux
 
 
 def scanner():
-    global atual, proximo, buffer, ant, linha, coluna, flag, b, erro, check, checkpoint, qtd_erro, caractere, b, tipo
+    global atual, proximo, buffer, ant, linha, coluna, flag, erro, check, checkpoint, qtd_erro, caractere, tipo
 
     atual = 0
     buffer = ''
     flag = False
-    b = ''
     qtd_erro = erro
     check = False
     checkpoint = False
