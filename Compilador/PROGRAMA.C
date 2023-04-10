@@ -12,8 +12,8 @@ int main(){
     int T2;
     int T3;
     int T4;
-    int T5;
-    bool T6;
+    bool T5;
+    int T6;
 
 
     /*variáveis*/
@@ -45,10 +45,10 @@ int main(){
     B = T4;
     D=B;
     C=5.0;
-    T6 = D <= 12;
-    while (T6) {
-        T5 = D+1;
-        D = T5;
+    T5 = D <= 12;
+    while (T5) {
+        T6 = D+1;
+        D = T6;
     }
     printf("%s","\nB=\n");
     printf("%d",D);
