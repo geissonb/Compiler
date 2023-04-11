@@ -251,7 +251,7 @@ def avalia(prod):
 
     elif prod == gramatica.gram[33]:  # R -> facaAte ( EXP_R ) CP_R
 
-        text2 = "while (" + str(var_bool_while[ocorrencias_facaAte-1]) + ') {\n'
+        text2 = "while (" + var_bool_while[ocorrencias_facaAte-1] + ') {\n'
         indent = (ocorrencias_facaAte-1) * 4
         text2 = indentar(indent, text2)
         s = len(corpo_repeticao)
