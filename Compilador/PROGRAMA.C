@@ -49,6 +49,7 @@ int main(){
     while (T5) {
         T6 = D+1;
         D = T6;
+        T5 = D <= 12;
     }
     printf("%s","\nB=\n");
     printf("%d",D);
