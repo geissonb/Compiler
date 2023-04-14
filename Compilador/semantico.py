@@ -254,10 +254,8 @@ def avalia(prod):
         text2 = "while (" + var_bool_while[ocorrencias_facaAte-1] + ') {\n'
         indent = (ocorrencias_facaAte-1) * 4
         text2 = indentar(indent, text2)
-        s = len(corpo_repeticao)
-        s *= -1
 
-        corpo_repeticao.insert(s+1, text2)
+        corpo_repeticao.insert(1, text2)
 
         for dado in corpo_repeticao:
             corpo.append(dado)
