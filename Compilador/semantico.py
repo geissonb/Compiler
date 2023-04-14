@@ -257,6 +257,13 @@ def avalia(prod):
 
         corpo_repeticao.insert(1, text2)
 
+        text3 = corpo_repeticao[0]
+        text3 = indentar(indent, text3)
+
+        tam = len(corpo_repeticao)
+        corpo_repeticao.insert((tam-1), text3)
+
+
         for dado in corpo_repeticao:
             corpo.append(dado)
         corpo_repeticao.clear()
