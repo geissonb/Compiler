@@ -263,12 +263,12 @@ def avalia(prod):
         tam = len(corpo_repeticao)
         corpo_repeticao.insert((tam-1), text3)
 
-
-        for dado in corpo_repeticao:
-            corpo.append(dado)
-        corpo_repeticao.clear()
-
         ocorrencias_facaAte -= 1
+
+        if ocorrencias_facaAte == 0:
+            for dado in corpo_repeticao:
+                corpo.append(dado)
+            corpo_repeticao.clear()
 
     elif prod == gramatica.gram[31] or prod == gramatica.gram[37] or prod == gramatica.gram[38]:
         indentacao = ' ' * indent
